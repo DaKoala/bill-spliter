@@ -1,0 +1,74 @@
+<!--index.wxml-->
+<view class="container">
+    <view class="weui-cells__title">费用明细</view>
+    <view class="section">
+        <view class="weui-cell" wx:for="{{moneyArr}}" wx:key="{{index}}">
+            <view class="weui-cell__bd">{{item.title}}</view>
+            <view class="weui-cell__ft">{{item.money}}</view>
+        </view>
+        <view class="weui-cell" wx:if="{{moneyArr.length > 0}}">
+            <view class="weui-cell__bd money-title">费用总计</view>
+            <view class="weui-cell__ft money-sum">{{sum}}</view>
+        </view>
+        <view class="weui-cell weui-cell_link" data-type="0" bindtap="showModal">添加款项</view>
+    </view>
+    <view class="weui-cells__title margin-title">分摊名单</view>
+    <view class="section">
+        <view class="weui-cell" wx:for="{{peopleArr}}" wx:key="{{index}}">
+            <view class="weui-cell__bd">{{item.title}}</view>
+            <view class="weui-cell__ft">{{item.money}}</view>
+        </view>
+        <view class="weui-cell weui-cell_link" data-type="1" bindtap="showModal">添加分摊人</view>
+    </view>
+    <view class="weui-cells__title margin-title">计算结果</view>
+    <view class="weui-form-preview result" wx:if="{{resultArr.length}}">
+        <view class="weui-form-preview__hd result-title-wrapper">
+            <view class="weui-form-preview__item">
+                <view class="weui-form-preview__label result-title">总计金额</view>
+                <view class="weui-form-preview__value_in-hd">{{sum}}</view>
+            </view>
+        </view>
+        <view class="weui-form-preview__bd">
+            <view class="weui-form-preview__item" wx:for="{{resultArr}}">
+                <view class="weui-form-preview__label">{{item.title}}</view>
+                <view class="weui-form-preview__value">{{item.money}}({{item.percent}})</view>
+            </view>
+        </view>
+    </view>
+    <view class="weui-btn-area">
+        <button class="weui-btn" type="primary" disabled="{{!moneyArr.length || !peopleArr.length}}" bindtap="compute">开始计算</button>
+    </view>
+    <view class="weui-btn-area">
+        <button class="weui-btn" type="warn" disabled="{{!moneyArr.length && !peopleArr.length}}" bindtap="reset">重置</button>
+    </view>
+</view>
+
+<view class="modal" wx:if="{{hasModal}}" catchtouchmove="preventDefault">
+    <view class="modal-body">
+        <view class="weui-cell weui-cell__no-border modal-title">添加{{isMoney ? '款项' : '分摊人'}}</view>
+        <view class="modal-cell__input">
+            <view class="modal-cell__left">
+                <view class="modal-label">
+                    {{isMoney ? '款项' : '分摊人'}}
+                </view>
+            </view>
+            <view class="modal-cell__right">
+                <input class="modal-input" adjust-position data-type="0" bindblur="finishInput" />
+            </view>
+        </view>
+        <view class="modal-cell__input">
+            <view class="modal-cell__left">
+                <view class="modal-label">
+                    {{isMoney ? '金额' : '分摊金额'}}
+                </view>
+            </view>
+            <view class="modal-cell__right">
+                <input class="modal-input" adjust-position data-type="1" type="digit" bindblur="finishInput" />
+            </view>
+        </view>
+        <view class="modal-footer">
+            <view class="modal-btn modal-btn_default" bindtap="hideModal">取消</view>
+            <view class="modal-btn {{disableForm ? 'modal-btn_disable' : 'modal-btn_primary'}}}" bindtap="{{disableForm ? '' : 'submitForm'}}">确认</view>
+        </view>
+    </view>
+</view>
