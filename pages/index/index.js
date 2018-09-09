@@ -6,6 +6,7 @@ Page({
         isMoney: true,
         disableForm: true,
         sum: null,
+        paidSum: null,
         title: null,
         money: null,
         deleteMoney: false,
@@ -31,7 +32,7 @@ Page({
             });
         } else {
             this.setData({
-                money: Number(e.detail.value)
+                money: e.detail.value
             });
         }
         this.checkInput();
@@ -59,7 +60,7 @@ Page({
     submitForm() {
         const item = {
             title: this.data.title,
-            money: this.data.money
+            money: Number(this.data.money)
         };
 
         // 编辑模式
@@ -139,6 +140,7 @@ Page({
             resultArr.push(item);
         }
         this.setData({
+            paidSum,
             resultArr
         });
     },

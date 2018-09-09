@@ -27,7 +27,7 @@
         <view class="weui-form-preview__hd result-title-wrapper">
             <view class="weui-form-preview__item">
                 <view class="weui-form-preview__label result-title">总计金额</view>
-                <view class="weui-form-preview__value_in-hd">{{sum}}</view>
+                <view class="weui-form-preview__value_in-hd">{{paidSum}}</view>
             </view>
         </view>
         <view class="weui-form-preview__bd">
