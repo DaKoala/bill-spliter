@@ -1,26 +1,28 @@
 <!--index.wxml-->
-<view class="container">
-    <view class="weui-cells__title">费用明细</view>
+<view class="container" bindtap="stopDelete">
+    <view class="weui-cells__title">实付金额</view>
     <view class="section">
-        <view class="weui-cell" wx:for="{{moneyArr}}" wx:key="{{index}}">
+        <view class="weui-cell" wx:for="{{moneyArr}}" wx:key="{{index}}" data-index="{{index}}" data-money="{{true}}" bindtap="invokeEdit" bindlongpress="invokeDelete">
             <view class="weui-cell__bd">{{item.title}}</view>
-            <view class="weui-cell__ft">{{item.money}}</view>
+            <button class="weui-btn mini-btn" size="mini" type="warn" data-delete="{{index}}" wx:if="{{deleteMoney && delete === index}}">删除</button>
+            <view class="weui-cell__ft" wx:else>{{item.money}}</view>
         </view>
         <view class="weui-cell" wx:if="{{moneyArr.length > 0}}">
-            <view class="weui-cell__bd money-title">费用总计</view>
+            <view class="weui-cell__bd money-title">付款总额</view>
             <view class="weui-cell__ft money-sum">{{sum}}</view>
         </view>
         <view class="weui-cell weui-cell_link" data-type="0" bindtap="showModal">添加款项</view>
     </view>
     <view class="weui-cells__title margin-title">分摊名单</view>
     <view class="section">
-        <view class="weui-cell" wx:for="{{peopleArr}}" wx:key="{{index}}">
+        <view class="weui-cell" wx:for="{{peopleArr}}" wx:key="{{index}}" data-index="{{index}}" data-money="{{false}}" bindtap="invokeEdit" bindlongpress="invokeDelete">
             <view class="weui-cell__bd">{{item.title}}</view>
-            <view class="weui-cell__ft">{{item.money}}</view>
+            <button class="weui-btn mini-btn" size="mini" type="warn" data-delete="{{index}}" data-money="{{false}}" wx:if="{{!deleteMoney && delete === index}}">删除</button>
+            <view class="weui-cell__ft" wx:else>{{item.money}}</view>
         </view>
         <view class="weui-cell weui-cell_link" data-type="1" bindtap="showModal">添加分摊人</view>
     </view>
-    <view class="weui-cells__title margin-title">计算结果</view>
+    <view class="weui-cells__title margin-title" wx:if="{{resultArr.length}}">计算结果</view>
     <view class="weui-form-preview result" wx:if="{{resultArr.length}}">
         <view class="weui-form-preview__hd result-title-wrapper">
             <view class="weui-form-preview__item">
@@ -45,7 +47,7 @@
 
 <view class="modal" wx:if="{{hasModal}}" catchtouchmove="preventDefault">
     <view class="modal-body">
-        <view class="weui-cell weui-cell__no-border modal-title">添加{{isMoney ? '款项' : '分摊人'}}</view>
+        <view class="weui-cell weui-cell__no-border modal-title">{{editObj ? '编辑' : '添加'}}{{isMoney ? '款项' : '分摊人'}}</view>
         <view class="modal-cell__input">
             <view class="modal-cell__left">
                 <view class="modal-label">
@@ -53,17 +55,17 @@
                 </view>
             </view>
             <view class="modal-cell__right">
-                <input class="modal-input" adjust-position data-type="0" bindblur="finishInput" />
+                <input class="modal-input" value="{{title}}" placeholder-class="modal-placeholder" adjust-position placeholder="{{isMoney ? '如:餐费、小费' : '人名'}}" data-type="0" bindinput="finishInput" />
             </view>
         </view>
         <view class="modal-cell__input">
             <view class="modal-cell__left">
                 <view class="modal-label">
-                    {{isMoney ? '金额' : '分摊金额'}}
+                    {{isMoney ? '实付金额' : '点单金额'}}
                 </view>
             </view>
             <view class="modal-cell__right">
-                <input class="modal-input" adjust-position data-type="1" type="digit" bindblur="finishInput" />
+                <input class="modal-input" focus="{{true}}" value="{{money}}" placeholder-class="modal-placeholder" adjust-position placeholder="{{isMoney ? '实际付款金额' : '点单时商品原价'}}" data-type="1" type="digit" bindinput="finishInput" />
             </view>
         </view>
         <view class="modal-footer">

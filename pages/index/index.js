@@ -8,10 +8,19 @@ Page({
         sum: null,
         title: null,
         money: null,
+        deleteMoney: false,
+        delete: null,
         totalMoney: 0,
+        editObj: null,
         moneyArr: [],
         peopleArr: [],
         resultArr: []
+    },
+
+    checkInput() {
+        this.setData({
+            disableForm: this.data.title === null || this.data.money === null
+        });
     },
 
     finishInput(e) {
@@ -25,23 +34,25 @@ Page({
                 money: Number(e.detail.value)
             });
         }
-        this.setData({
-            disableForm: this.data.title === null || this.data.money === null
-        });
+        this.checkInput();
     },
 
     showModal(e) {
         const type = parseInt(e.currentTarget.dataset.type); // 0是款项，1是分摊人
+        const title = type === 0 ? `款项${this.data.moneyArr.length + 1}` : `分摊人${this.data.peopleArr.length + 1}`;
         this.setData({
+            title,
             isMoney: type === 0,
             hasModal: true
         });
+        this.checkInput();
     },
 
     hideModal() {
         this.setData({
             hasModal: false
         });
+        this.clearEdit();
         this.clearForm();
     },
 
@@ -50,6 +61,24 @@ Page({
             title: this.data.title,
             money: this.data.money
         };
+
+        // 编辑模式
+        if (this.data.editObj) {
+            const editObj = this.data.editObj;
+            const arrName = editObj.isMoney ? 'moneyArr' : 'peopleArr';
+            const newArr = this.data[arrName].concat();
+            newArr[editObj.index] = item;
+            this.setData({
+                [arrName]: newArr
+            });
+            if (editObj.isMoney) {
+                this.updateSum();
+            }
+            this.hideModal();
+            return;
+        }
+
+        // 新增项目
         const arrName = this.data.isMoney ? 'moneyArr' : 'peopleArr';
         if (!this.data.isMoney) {
             const peopleArr = this.data.peopleArr;
@@ -69,16 +98,20 @@ Page({
             [arrName]: newArr
         });
         if (this.data.isMoney) {
-            let sum = 0;
-            const moneyArr = this.data.moneyArr;
-            for (let i = 0; i < moneyArr.length; i++) {
-                sum += moneyArr[i].money;
-            }
-            this.setData({
-                sum: sum.toFixed(2)
-            });
+            this.updateSum();
         }
         this.hideModal();
+    },
+
+    updateSum() {
+        let sum = 0;
+        const moneyArr = this.data.moneyArr;
+        for (let i = 0; i < moneyArr.length; i++) {
+            sum += moneyArr[i].money;
+        }
+        this.setData({
+            sum: sum.toFixed(2)
+        });
     },
 
     clearForm() {
@@ -116,6 +149,61 @@ Page({
             peopleArr: [],
             resultArr: []
         })
+    },
+
+    invokeEdit(e) {
+        const arrName = e.currentTarget.dataset.money ? 'moneyArr' : 'peopleArr';
+        const index = e.currentTarget.dataset.index;
+        const target = this.data[arrName][index];
+        const editObj = {
+            index,
+            isMoney: e.currentTarget.dataset.money,
+            title: target.title,
+            money: target.money
+        };
+        this.setData({
+            editObj,
+            title: target.title,
+            money: target.money,
+            hasModal: true
+        })
+    },
+
+    clearEdit() {
+        this.setData({
+            editObj: null
+        })
+    },
+
+    invokeDelete(e) {
+        this.setData({
+            delete: e.currentTarget.dataset.index,
+            deleteMoney: e.currentTarget.dataset.money
+        })
+    },
+
+    stopDelete(e) {
+        const delIndex = e.target.dataset.delete;
+        console.log(delIndex);
+        if (delIndex !== undefined) {
+            wx.showModal({
+                title: '删除',
+                content: '操作不可撤销，是否确定？',
+                success: (res) => {
+                    const arrName = this.data.deleteMoney ? 'moneyArr' : 'peopleArr';
+                    const newArr = this.data[arrName].concat();
+                    newArr.splice(delIndex, 1);
+                    this.setData({
+                        [arrName]: newArr,
+                        delete: null
+                    })
+                }
+            })
+        } else {
+            this.setData({
+                delete: null
+            })
+        }
     },
 
     preventDefault() {},

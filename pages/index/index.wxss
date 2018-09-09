@@ -34,6 +34,8 @@
 }
 
 .modal-body {
+    position: relative;
+    bottom: 100rpx;
     width: 80%;
     border-radius: 6rpx;
     background: #f8f8f8;
@@ -76,7 +78,12 @@
 }
 
 .modal-label {
-    color: #888888;
+    color: #586c94;
+}
+
+.modal-placeholder {
+    font-size: 34rpx;
+    font-weight: 300;
 }
 
 .modal-btn {

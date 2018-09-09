@@ -48,3 +48,7 @@ page{
 .weui-cell__no-border {
   border: 0;
 }
+
+.mini-btn {
+  margin: 0;
+}
